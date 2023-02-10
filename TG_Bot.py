@@ -24,19 +24,16 @@ def get_from_to_text(message):
 def write_and_send(message):
     max_len = 20  # поменять макс длинну
     help_tup = wt.separation_text(message.text)
-    if len(help_tup[2]) <= max_len:
-        try:
-            file_path = wt.write_on_image(
-                message.text, int(message.from_user.id))
-            with open(file_path, "rb") as img:
-                print(
-                    f"File: {file_path}; Text: {message.text}; User: {message.from_user.first_name}; User_ID: {message.from_user.id}")
-                bot.send_document(message.chat.id, img)
-            os.remove(file_path)
-        except:
-            error(message)
+    try:
+        file_path = wt.write_on_image(
+            f"{help_tup[0]}_{help_tup[1]}_{wt.check_lenght_str(help_tup[2], max_len)}", int(message.from_user.id))
+        with open(file_path, "rb") as img:
+            print(
+                f"File: {file_path}; Text: {message.text}; User: {message.from_user.first_name}; User_ID: {message.from_user.id}")
+            bot.send_document(message.chat.id, img)
+        os.remove(file_path)
         welcome(message)
-    else:
+    except:
         error(message)
 
 
