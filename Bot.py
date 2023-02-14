@@ -18,7 +18,7 @@ def welcome(message):
         error(message)
     else:
         received_message = bot.send_message(
-            message.chat.id, f"Привет, {message.from_user.first_name}!\nЯ телеграм бот, который нанести текст на валентинку\nНапиши \'/next\', чтобы начать")
+            message.chat.id, f"Привет, {message.from_user.first_name}!\nЯ телеграм бот, который нанесёт текст на валентинку\nНапиши \'/next\', чтобы начать")
         bot.register_next_step_handler(received_message, get_from_to_text)
 
 
@@ -29,7 +29,7 @@ def get_from_to_text(message):
     else:
         write_in_file = True
         with open("users.csv", "r", encoding="utf-8") as file:
-            readerder = csv.reader(file, delimiter=";")
+            readerder = csv.reader(file, delimiter=",")
             for row in readerder:
                 if row[1] == str(message.from_user.id):
                     write_in_file = False
@@ -37,15 +37,15 @@ def get_from_to_text(message):
             print(
                 f"Новый пользователь -> {message.from_user.first_name} -> ID: {message.from_user.id}")
             with open("users.csv", "a", newline="", encoding="utf-8") as file:
-                printer = csv.writer(file, delimiter=";")
+                printer = csv.writer(file, delimiter=",")
                 printer.writerow([
                     message.from_user.first_name,
                     message.from_user.id,
                     message.chat.id
                 ])
-        if message.from_user.id == 765103434:
-            markup = types.ReplyKeyboardMarkup(
+        markup = types.ReplyKeyboardMarkup(
                 resize_keyboard=True, one_time_keyboard=True)
+        if message.from_user.id == 765103434:
             markup.add(types.KeyboardButton("Send_GoodBye"))
         received_message = bot.send_message(
             message.chat.id, "Итак напиши мне КОМУ валентинка, ОТ КОГО она и КАКОЙ на ней должен быть ТЕКСТ, обязательно соблюдай следующий формат иначе получится некрасиво)\n\nФОРМАТ:\nПолине_Вовы_Я тебя люблю\n\n !Без смайликов!(Иначе будут ??? вместо них)\nТакже не пиши слишком большое сообщение, иначе будет не очень красиво)\nНижние подчёркивания обязательно!(Маше_Пети_)", reply_markup=markup)
@@ -83,7 +83,7 @@ def write_and_send(message):
 def error(message):
     if message.content_type != 'text':
         bot.send_message(
-            message.chat.id, "Ненужно мне отправлять что-то не похожее на текст пожалуйста *робот злиться*")
+            message.chat.id, "Не нужно мне отправлять что-то не похожее на текст пожалуйста\n*робот злиться*")
     received_message = bot.send_message(
         message.chat.id, "Произошла ошибочка. Возможно:\n1) Ты отправил(а), что-то не то\n2) Ты отправил(а) не в правильном формате\n3) Слишком большой текс поздравления\n\nНапиши '/start', чтобы продолжить")
     bot.register_next_step_handler(received_message, welcome)
@@ -99,13 +99,13 @@ def send_goodbye(message):
                 for line in file:
                     text += line
             with open("users.csv", "r", encoding="utf-8") as file:
-                readerder = csv.reader(file, delimiter=";")
+                readerder = csv.reader(file, delimiter=",")
                 for row in readerder:
                     try:
                         bot.send_message(row[2], text)
+                        print(f"Send goodbye to {row[2]}")
                     except:
                         pass
-            bot.stop_bot()
         else:
             error(message)
 
@@ -113,7 +113,7 @@ def send_goodbye(message):
 while True:
     try:
         print("Bot Start!")
-        bot.polling(non_stop=True)
+        bot.infinity_polling()
     except:
         print("Some problem, restart")
         time.sleep(10)

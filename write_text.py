@@ -1,4 +1,13 @@
 from PIL import ImageFont, ImageDraw, Image
+import random
+import os
+
+
+def check_input_format(text: str) -> bool:
+    if len(text.split("_")) == 3:
+        return True
+    else:
+        return False
 
 
 def check_lenght_str(text: str, max_len: int) -> str:
@@ -40,16 +49,26 @@ def separation_text(text: str) -> tuple:
 
 
 def write_on_image(text: str, user_id: int) -> str:
-    image = Image.open("valentine.jpg")
+    num_of_image = random.randint(1, len(os.listdir("image/")))
+    image = Image.open(f"image/valentinka_{num_of_image}.png")
     draw = ImageDraw.Draw(image)
-    new_path = f"New_file_{str(user_id)}.jpg"
+    new_path = f"New_file_{str(user_id)}.png"
 
-    font_from_to = ImageFont.truetype("fonts/Ubuntu-Regular.ttf", 32)
-    font_text = ImageFont.truetype("fonts/Ubuntu-Bold.ttf", 32)
+    font_from_to = ImageFont.truetype("fonts/Ubuntu-BoldItalic.ttf", 100)
+    font_text = ImageFont.truetype("fonts/Ubuntu-Bold.ttf", 120)
+    fill_color = ""
+
+    text_coord = (1850, 625)
+
+    if num_of_image == 1 or num_of_image == 3:
+        fill_color = "#FF2B6D"
+    if num_of_image == 2:
+        fill_color = "#15576D"
+        text_coord = (1875, 625)
 
     result_tuple = separation_text(text)
-    draw.text((110, 150), result_tuple[0], fill="red", font=font_from_to)
-    draw.text((110, 180), result_tuple[1], fill="red", font=font_from_to)
-    draw.text((110, 230), result_tuple[2], fill="#FF2B6D", font=font_text)
+    draw.text((2340, 1500), result_tuple[0], fill="white", font=font_from_to)
+    draw.text((2340, 1880), result_tuple[1], fill="white", font=font_from_to)
+    draw.text(text_coord, result_tuple[2], fill=fill_color, font=font_text)
     image.save(new_path)
     return new_path
